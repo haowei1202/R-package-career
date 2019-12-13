@@ -1,0 +1,163 @@
+
+welcome<-function(){
+  # define welcome context
+  welcome_str<-"Welcome to our career package!"
+  print(welcome_str)
+}
+
+install_package<-function(){
+  # install openxlsx
+  install.packages('openxlsx')
+  library(openxlsx)
+}
+
+load_career_data<-function(){
+  # read occupation data
+  data_filename<-"occupation.xlsx"
+  sheet_id<-8
+  data<-read.xlsx(data_filename, sheet=sheet_id)
+  row_id<-3:nrow(data)
+  col_id<-c(1,9,10)
+  data<-data[row_id,col_id]
+
+  # set the names of columns
+  col1<-"Occupation"
+  col2<-"Occupational_openings"
+  col3<-"Median_annual_wage"
+  colnames(data)<-c(col1,col2,col3)
+
+  # read occupational groups
+  data_filename<-"occupational_group.xlsx"
+  sheet_id<-1
+  groups<-read.xlsx(data_filename, sheet=sheet_id)
+
+  # set the names of columns
+  colnames(groups)<-c("Occupation","Occupational_group")
+
+  data_needed<-merge(x=data,y=groups,by="Occupation", all.y=TRUE)
+  print(data_needed)
+
+  # remove the NAN items
+  data_needed<-na.omit(data_needed)
+
+  # tranform the string to number
+  wage_number<-as.numeric(data_needed$Median_annual_wage)
+  openings_number<-as.numeric(data_needed$Occupational_openings)*1000
+  data_needed$Median_annual_wage<-wage_number
+  data_needed$Occupational_openings<-openings_number
+  data<-data_needed
+  return(data)
+}
+
+mean_wage<-function(data){
+  wage<-data$Median_annual_wage
+  mean_wage<-mean(wage)
+  return(mean_wage)
+}
+
+sum_openings<-function(data){
+  openings<-data$Occupational_openings
+  sum_openings<-sum(openings)
+  return(sum_openings)
+}
+
+top_wage_job<-function(data){
+  wage<-data$Median_annual_wage
+  max_value<-max(wage)
+  row_id<-data$Median_annual_wage==max_value
+  e<-data[row_id,]$Occupation
+  col<-data$Occupation==e
+  job<-data[col,]
+  return(job)
+}
+
+top_openings_job<-function(data){
+  job<-data[data$Occupation==data[data$Occupational_openings==max(data$Occupational_openings),]$Occupation,]
+  return(job)
+}
+
+bottom_wage_job<-function(data){
+  job<-data[data$Occupation==data[data$Median_annual_wage==min(data$Median_annual_wage),]$Occupation,]
+  return(job)
+}
+
+bottom_openings_job<-function(data){
+  job<-data[data$Occupation==data[data$Occupational_openings==min(data$Occupational_openings),]$Occupation,]
+  return(job)
+}
+
+top_wage_industry<-function(data){
+  groups<-levels(factor(data$Occupational_group))
+  group_names<-c()
+  mean_wages<-c()
+  for( group in groups){
+
+    # get names of all the groups
+    group_names<-c(group_names,group)
+
+    # get the mean wages for all the groups
+    mean_wage<-mean(data[which(data$Occupational_group==group), ]$Median_annual_wage)
+    mean_wages<-c(mean_wages,mean_wage)
+  }
+  mean_wages_dataframe = data.frame(group_names,mean_wages)
+  names(mean_wages_dataframe)<-c("group","mean_wage")
+  group<-mean_wages_dataframe[mean_wages_dataframe$group==mean_wages_dataframe[mean_wages_dataframe$mean_wage==max(mean_wages_dataframe$mean_wage),]$group,]
+  return(group)
+}
+
+bottom_wage_industry<-function(data){
+  groups<-levels(factor(data$Occupational_group))
+  group_names<-c()
+  mean_wages<-c()
+  for( group in groups){
+
+    # get names of all the groups
+    group_names<-c(group_names,group)
+
+    # get the mean wages for all the groups
+    mean_wage<-mean(data[which(data$Occupational_group==group), ]$Median_annual_wage)
+    mean_wages<-c(mean_wages,mean_wage)
+  }
+  mean_wages_dataframe = data.frame(group_names,mean_wages)
+  names(mean_wages_dataframe)<-c("group","mean_wage")
+  group<-mean_wages_dataframe[mean_wages_dataframe$group==mean_wages_dataframe[mean_wages_dataframe$mean_wage==min(mean_wages_dataframe$mean_wage),]$group,]
+  return(group)
+}
+
+top_openings_industry<-function(data){
+  groups<-levels(factor(data$Occupational_group))
+  group_names<-c()
+  sum_openings<-c()
+  for( group in groups){
+
+    # get names of all the groups
+    group_names<-c(group_names,group)
+
+    # get the mean wages for all the groups
+    sum_opening<-sum(data[which(data$Occupational_group==group), ]$Occupational_openings)
+    sum_openings<-c(sum_openings,sum_opening)
+  }
+  sum_openings_dataframe<-cbind.data.frame(group_names,sum_openings)
+  names(sum_openings_dataframe)<-c("group","sum_opening")
+  group<-sum_openings_dataframe[sum_openings_dataframe$group==sum_openings_dataframe[sum_openings_dataframe$sum_opening==max(sum_openings_dataframe$sum_opening),]$group,]
+  return(group)
+}
+
+bottom_openings_industry<-function(data){
+  groups<-levels(factor(data$Occupational_group))
+  group_names<-c()
+  sum_openings<-c()
+  for( group in groups){
+
+    # get names of all the groups
+    group_names<-c(group_names,group)
+
+    # get the mean wages for all the groups
+    sum_opening<-sum(data[which(data$Occupational_group==group), ]$Occupational_openings)
+    sum_openings<-c(sum_openings,sum_opening)
+  }
+  sum_openings_dataframe<-cbind.data.frame(group_names,sum_openings)
+  names(sum_openings_dataframe)<-c("group","sum_opening")
+  group<-sum_openings_dataframe[sum_openings_dataframe$group==sum_openings_dataframe[sum_openings_dataframe$sum_opening==min(sum_openings_dataframe$sum_opening),]$group,]
+  return(group)
+}

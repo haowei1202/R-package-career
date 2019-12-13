@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1575008867817.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2328706541",
+    "id" : "6C7C093A",
+    "lastKnownWriteTime" : 1575435546,
+    "last_content_update" : 1575435546521,
+    "path" : "C:/Users/yankhuan/OneDrive/project/R/package/career/R/career.R",
+    "project_path" : "R/career.R",
+    "properties" : {
+        "cursorPosition" : "134,0",
+        "scrollLine" : "127"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

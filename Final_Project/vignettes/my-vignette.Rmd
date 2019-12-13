@@ -1,0 +1,120 @@
+---
+title: "my-vignette"
+author: "Haowei Hou"
+date: "12/12/2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(career)
+```
+Package: career
+
+Type: Package
+
+Title: The package for providing some career information
+
+Version: 0.1.0
+
+Author: Haowei Hou
+
+Maintainer: Maintainer <hh2825@columbia.edu>
+
+Description: In this package, we will provide information about positions' salary and demands. You can view the positions and industries with the highest and lowest wages as well as check the wage scatter distribution. In addition, you also can view the related position demands. Through this package, people will learn about the salary level of different industries and the vacancies in different industries. This provides enough help for people's choice of future employment and the comparison of different jobs
+
+Main functions description:
+
+1.load_career_data():
+This function will return the dataframe about career information. Through the dataframe,you can know the mean wage and the openings positions of each positions.
+
+2.get_service_jobs(data):
+The function processes the jobs about service and plot the distrbution in a scatter figure.From this graph you can see a typical service sector wage map and where that salary level is. Similarly, you can also check the engineering field, liberal field and traditional job's scatter figure.
+
+3.top_wage_job(data): 
+Input the dataframe about career and you can know the information about the job with top wage. Similarly, you can know the mean wage job and bottom wage job.
+
+4.top_openings_job(data):
+Input the dataframe about career and you can know the information about the job with top openings. Similarly, you can know the mean openings job and bottom openings job.
+
+5.top_wage_industry(data):
+Input the dataframe about career and you can know the information about the industry with top wage. Similarly, you can know the mean wage industry and bottom wage industry.
+
+6.top_openings_industry(data):
+Input the dataframe about career and you can know the information about the industry with top openings. Similarly, you can know the mean openings industry and bottom openings industry.
+
+The output of the career dataframe
+```{r}
+download_data <- function(){
+  library(httr)
+  url <- 'https://www.bls.gov/emp/ind-occ-matrix/occupation.xlsx'
+  GET(url, write_disk("./occupation.xlsx", overwrite = TRUE))
+}
+```
+```{r}
+load_career_data <- function(){
+  install_package
+  download_data()
+  library(tidyverse)
+  library(openxlsx)
+  # read occupation data
+  data_filename <- "occupation.xlsx"
+  sheet_id <- 8
+  data <- read.xlsx(data_filename, sheet = sheet_id)
+  tbl_df(data_needed)
+
+  # select rows
+  row_id <- 3:nrow(data)
+
+  # select columns
+  col_id <- c(1,9,10)
+  data <- data[row_id,col_id]
+
+  # set the names of columns
+  col1 <- "Occupation"
+  col2 <- "Occupational_openings"
+  col3 <- "Median_annual_wage"
+  colnames(data) <- c(col1,col2,col3)
+
+  # read occupational groups
+  data_filename <- "occupational_group.xlsx"
+  sheet_id <- 1
+  groups <- read.xlsx(data_filename, sheet=sheet_id)
+
+  # set the names of columns
+  colnames(groups) <- c("Occupation","Occupational_group")
+
+  data_needed <- merge(x = data,y = groups,by = "Occupation", all.y = TRUE)
+
+  # remove the NAN items
+  data_needed <- na.omit(data_needed)
+
+  # tranform the string to number
+  wage_number <- as.numeric(data_needed$Median_annual_wage)
+  openings_number <- as.numeric(data_needed$Occupational_openings)*1000
+  data_needed$Median_annual_wage <- wage_number
+  data_needed$Occupational_openings <- openings_number
+  data <- data_needed
+  return(data)
+}
+```
+
+License: MIT + file LICENSE
+
+Encoding: UTF-8
+
+LazyData: true
+
+RoxygenNote: 6.1.1
+
+VignetteBuilder: knitr

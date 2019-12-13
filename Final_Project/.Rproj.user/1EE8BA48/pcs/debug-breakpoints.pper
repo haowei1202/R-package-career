@@ -1,0 +1,21 @@
+{
+    "debugBreakpointsState" : {
+        "breakpoints" : [
+            {
+                "editor_line_number" : 97,
+                "editor_state" : 2,
+                "function_name" : "show_data",
+                "function_steps" : "",
+                "id" : 0,
+                "is_package_breakpoint" : true,
+                "is_pending_debug_completion" : false,
+                "line_number" : 97,
+                "needs_updated_steps" : true,
+                "package_name" : "career",
+                "path" : "~/Desktop/GitHub/Hou_Haowei/final project/R/career.R",
+                "state" : 2,
+                "type" : 0
+            }
+        ]
+    }
+}

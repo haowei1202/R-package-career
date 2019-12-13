@@ -1,0 +1,178 @@
+# Problem 2
+
+```{r}
+# load library
+library(ggplot2)
+library(ggmap)
+library(sp)
+library(maptools)
+library(maps)
+# read data
+earthquakes<-read.csv("all_month.csv")
+earthquakes.x<-earthquakes$longitude
+earthquakes.y<-earthquakes$latitude 
+# plot world map
+map<-NULL 
+world_map<-borders("world",colour = "gray50",fill="white")
+map<-ggplot()+world_map+ylim(-60,90)
+# plot the scatter figure for all the earthquakes
+map2<-map+geom_point(aes(x=earthquakes.x,y=earthquakes.y),color="red")+scale_size(range=c(0,2))
+map2
+```
+
+It can be seen from the above figure that most of the red points are in the coastal areas, i.e. most of the earthquakes occur in the coastal areas, mainly the collision zones between different geological plates.
+
+```{r}
+# read data
+earthquakes<-read.csv("all_month.csv")
+long<-earthquakes$longitude
+lat<-earthquakes$latitude 
+# plot the bubble map
+mag<-(earthquakes$mag-min(earthquakes$mag))/(max(earthquakes$mag)-min(earthquakes$mag))
+mag<-mag**3
+symbols(long, lat, circles=mag,bg="red",inches=0.1)
+```
+
+In the figure above, I adjust the size of the red dot according to the magnitude to show the magnitude difference in different regions. From the picture, we can also see that the places with larger magnitude also occur at the junction of coastal areas and different geological plates. In the non junction, the red dot is smaller, that is, the magnitude is smaller.
+
+# Problem 3
+
+My purpose is to integrate and analyze the wage and position demand data of different industries and get the wage and position demand of different industries, which is helpful for students to choose their major and work.
+
+The data is about Wages and projected openings by occupation. Occupational groups in the charts are from the BLS Occupational Employment Statistics (OES) program (https://www.bls.gov/ooh/), which produces employment and wage estimates annually for more than 800 detailed occupations. Projections data are from the BLS Employment Projections program (https://www.bls.gov/emp/tables/occupational-projections-and-characteristics.htm).
+
+Source: U.S. Bureau of Labor Statistics, Occupational Employment Statistics (wages) and Employment Projections (projected openings).
+
+```{r}
+# load library
+library(openxlsx)
+library(ggplot2)
+# read occupation data
+data<-read.xlsx("occupation.xlsx", sheet=8)
+data<-data[3:nrow(data),c(1,9,10)]
+colnames(data)<-c("Occupation","Occupational_openings","Median_annual_wage")
+# read occupational groups
+groups<-read.xlsx("occupational_group.xlsx", sheet=1)
+data_needed<-merge(x=data,y=groups,by="Occupation", all.y=TRUE)
+print(data_needed)
+# tranform the string to number 
+data_needed$Median_annual_wage<-as.numeric(data_needed$Median_annual_wage)
+data_needed$Occupational_openings<-as.numeric(data_needed$Occupational_openings)*1000
+# read the data we needed in groups
+Computer_and_Information_Technology<-data_needed[which(data_needed$Occupational_group=='Computer and Information Technology'), ]
+Architecture_and_Engineering<-data_needed[which(data_needed$Occupational_group=='Architecture and Engineering'), ]
+Life_Physical_and_Social_Science<-data_needed[which(data_needed$Occupational_group=='Life, Physical, and Social Science'), ]
+Math<-data_needed[which(data_needed$Occupational_group=='Math'), ]
+# set the colors
+cols=c('Computer and\nInformation Technology'="#191970", 'Architecture and\nEngineering'="#008B00", 'Life, Physical, and\nSocial Science'="#8B2323",'Math'="#63B8FF")
+# plot the figure
+p<-ggplot()
+p<-p+geom_point(aes(x=Computer_and_Information_Technology$Occupational_openings,y=Computer_and_Information_Technology$Median_annual_wage,colour="Computer and\nInformation Technology"),size=2)
+p<-p+geom_point(aes(x=Architecture_and_Engineering$Occupational_openings,y=Architecture_and_Engineering$Median_annual_wage,colour="Architecture and\nEngineering"),size=2)
+p<-p+geom_point(aes(x=Life_Physical_and_Social_Science$Occupational_openings,y=Life_Physical_and_Social_Science$Median_annual_wage,colour="Life, Physical, and\nSocial Science"),size=2)
+p<-p+geom_point(aes(x=Math$Occupational_openings,y=Math$Median_annual_wage,colour="Math"),size=2)
+p<-p+scale_colour_manual(name="class",values=cols)
+p<-p+geom_hline(yintercept=38640, linetype="dashed")
+p<-p+theme(panel.background=element_blank(),panel.grid.major=element_line(linetype = "dotted", color="grey"),
+           axis.line=element_line(size=0.5),legend.title=element_blank());
+p<-p+scale_y_continuous(breaks=c(0,25000,50000,75000,100000,125000,150000),limits=c(0,150000),expand=c(0,0))
+p<-p+scale_x_continuous(breaks=c(0,25000,50000,75000,100000,125000),limits=c(0,150000),expand=c(0,0))
+p<-p+annotate("text", x=108000, y=52000,label="All occupations,")
+p<-p+annotate("text", x=120000, y=45000,label="median annual wage = $38,640")
+p<-p+labs(x="Annual average openings, projected 2018-28",y="Median annual wage, 2018")
+p<-p+theme(legend.position = "top")
+p
+```
+
+In this chart, I analyzed the wage and job demand of different industries among several engineering related groups. These groups are computer and information technology, architecture and engineering, life, physical, and social science and math. From the results, it can be seen that the computer and information technology group has a higher demand for jobs and higher wages. The most demanding position is computer support specialists (82,500) in the computer and information technology group. The highest wage is Petroleum Engineers ($137,170) in the architecture and engineering group.In addition, all positions are paid above average wages.
+
+```{r}
+# read the data we needed in groups
+Farming_Fishing_and_Forestry<-data_needed[which(data_needed$Occupational_group=='Farming, Fishing, and Forestry'), ]
+Construction_and_Extraction<-data_needed[which(data_needed$Occupational_group=='Construction and Extraction'), ]
+Installation_Maintenance_and_Repair<-data_needed[which(data_needed$Occupational_group=='Installation, Maintenance, and Repair'), ]
+Production<-data_needed[which(data_needed$Occupational_group=='Production'), ]
+# set the colors
+cols=c('Farming Fishing\nandForestry'="#191970", 'Construction and\nExtraction'="#008B00", 'Installation Maintenance\nand Repair'="#8B2323",'Production'="#63B8FF")
+# plot the figure
+p<-ggplot()
+p<-p+geom_point(aes(x=Construction_and_Extraction$Occupational_openings,y=Construction_and_Extraction$Median_annual_wage,colour="Construction and\nExtraction"),size=2)
+p<-p+geom_point(aes(x=Production$Occupational_openings,y=Production$Median_annual_wage,colour="Production"),size=2)
+p<-p+geom_point(aes(x=Installation_Maintenance_and_Repair$Occupational_openings,y=Installation_Maintenance_and_Repair$Median_annual_wage,colour="Installation Maintenance\nand Repair"),size=2)
+p<-p+geom_point(aes(x=Farming_Fishing_and_Forestry$Occupational_openings,y=Farming_Fishing_and_Forestry$Median_annual_wage,colour="Farming Fishing\nandForestry"),size=2)
+p<-p+scale_colour_manual(name="class",values=cols)
+p<-p+geom_hline(yintercept=38640, linetype="dashed")
+p<-p+theme(panel.background=element_blank(),panel.grid.major=element_line(linetype = "dotted", color="grey"),
+           axis.line=element_line(size=0.5),legend.title=element_blank());
+p<-p+scale_y_continuous(breaks=c(0,25000,50000,75000,100000),limits=c(0,100000),expand=c(0,0))
+p<-p+scale_x_continuous(breaks=c(0,50000,100000,150000,200000),limits=c(0,210000),expand=c(0,0))
+# add the annotate
+p<-p+annotate("text", x=150600, y=52000,label="All occupations,")
+p<-p+annotate("text", x=170000, y=45000,label="median annual wage = $38,640")
+p<-p+labs(x="Annual average openings, projected 2018-28",y="Median annual wage, 2018")
+p<-p+theme(legend.position = "top")
+p
+```
+
+In this chart, I analyzed the occupational groups: Farming, Fishing, and Forestry, Construction and Extraction, Installation, Maintenance, and Repair and Production. Compared with the engineering group in the previous chart, their salaries are much lower than those of the engineering jobs, and there are many jobs below the average wage. It can be seen from the results that the overall cost performance of this kind of wage is not high, but the demand for posts is relatively high, probably because the wage is not high, and there are not many people who choose this kind of jobs.
+
+```{r}
+# read the data we needed in groups
+Legal<-data_needed[which(data_needed$Occupational_group=='Legal'), ]
+Education_Training_and_Library<-data_needed[which(data_needed$Occupational_group=='Education, Training, and Library'), ]
+Community_and_Social_Service<-data_needed[which(data_needed$Occupational_group=='Community and Social Service'), ]
+Protective_Service<-data_needed[which(data_needed$Occupational_group=='Protective Service'), ]
+# set the colors
+cols=c('Legal'="#191970", 'Education, Training,\nand Library'="#008B00", 'Community and\nSocial Service'="#8B2323",'Protective Service'="#63B8FF")
+# plot the figure
+p<-ggplot()
+p<-p+geom_point(aes(x=Education_Training_and_Library$Occupational_openings,y=Education_Training_and_Library$Median_annual_wage,colour="Education, Training,\nand Library"),size=2)
+p<-p+geom_point(aes(x=Protective_Service$Occupational_openings,y=Protective_Service$Median_annual_wage,colour="Protective Service"),size=2)
+p<-p+geom_point(aes(x=Community_and_Social_Service$Occupational_openings,y=Community_and_Social_Service$Median_annual_wage,colour="Community and\nSocial Service"),size=2)
+p<-p+geom_point(aes(x=Legal$Occupational_openings,y=Legal$Median_annual_wage,colour="Legal"),size=2)
+
+p<-p+scale_colour_manual(name="class",values=cols)
+p<-p+geom_hline(yintercept=38640, linetype="dashed")
+p<-p+theme(panel.background=element_blank(),panel.grid.major=element_line(linetype = "dotted", color="grey"),
+           axis.line=element_line(size=0.5),legend.title=element_blank());
+p<-p+scale_y_continuous(breaks=c(0,25000,50000,75000,100000,125000,150000),limits=c(0,150000),expand=c(0,0))
+p<-p+scale_x_continuous(breaks=c(0,25000,50000,75000,100000,125000,150000),limits=c(0,160000),expand=c(0,0))
+# add the annotate
+p<-p+annotate("text", x=115600, y=52000,label="All occupations,")
+p<-p+annotate("text", x=130000, y=45000,label="median annual wage = $38,640")
+p<-p+labs(x="Annual average openings, projected 2018-28",y="Median annual wage, 2018")
+p<-p+theme(legend.position = "top")
+p
+```
+
+In this chart, I analyzed some liberal arts positions, such as legal, education, training, and library, community and social service and protective service. From the figure, there are few points on the table, which shows that the degree of subdivision of such posts is not as detailed as the previous group. Compared with the engineering related groups, the wage level of this group is not high, but slightly higher than the wage level. The demand for jobs and wage level are moderate.
+
+```{r}
+# read the data we needed in groups
+Food_Preparation_and_Serving<-data_needed[which(data_needed$Occupational_group=='Food Preparation and Serving'), ]
+Media_and_Communication<-data_needed[which(data_needed$Occupational_group=='Media and Communication'), ]
+Entertainment_and_Sports<-data_needed[which(data_needed$Occupational_group=='Entertainment and Sports'), ]
+Arts_and_Design<-data_needed[which(data_needed$Occupational_group=='Arts and Design'), ]
+# set the colors
+cols=c('Food Preparation\nand Serving'="#63B8FF",'Media and\nCommunication'="#8B2323",'Entertainment\nand Sports'="#008B00", 'Arts and Design'="#191970")
+# plot the figure
+p<-ggplot()
+p<-p+geom_point(aes(x=Food_Preparation_and_Serving$Occupational_openings,y=Food_Preparation_and_Serving$Median_annual_wage,colour="Food Preparation\nand Serving"),size=2)
+p<-p+geom_point(aes(x=Media_and_Communication$Occupational_openings,y=Media_and_Communication$Median_annual_wage,colour="Media and\nCommunication"),size=2)
+p<-p+geom_point(aes(x=Arts_and_Design$Occupational_openings,y=Arts_and_Design$Median_annual_wage,colour="Arts and Design"),size=2)
+p<-p+geom_point(aes(x=Entertainment_and_Sports$Occupational_openings,y=Entertainment_and_Sports$Median_annual_wage,colour="Entertainment\nand Sports"),size=2)
+p<-p+scale_colour_manual(name="class",values=cols)
+p<-p+geom_hline(yintercept=38640, linetype="dashed")
+p<-p+theme(panel.background=element_blank(),panel.grid.major=element_line(linetype = "dotted", color="grey"),
+           axis.line=element_line(size=0.5),legend.title=element_blank());
+p<-p+scale_y_continuous(breaks=c(0,25000,50000,75000,100000),limits=c(0,100000),expand=c(0,0))
+p<-p+scale_x_continuous(breaks=c(0,200000,400000,600000,800000,1000000),limits=c(0,1200000),expand=c(0,0))
+# add the annotate
+p<-p+annotate("text", x=850000, y=52000,label="All occupations,")
+p<-p+annotate("text", x=950000, y=45000,label="median annual wage = $38,640")
+p<-p+labs(x="Annual average openings, projected 2018-28",y="Median annual wage, 2018")
+p<-p+theme(legend.position = "top")
+p
+```
+
+Finally, I analyzed the work of food, media, entertainment, and arts, such as food preparation and serving, media and communication, entertainment and sports and arts and design. Obviously, as can be seen from the above figure, most of the points are concentrated in front of the horizontal axis, indicating that the demand for these positions is not large, and it can be seen that the salary level of these positions is also low. In particular, the wages related to food preparation and serving are concentrated around $25,000. The salary level of this kind of wage is very low, but its demand is large, which shows that most people are unwilling to choose this kind of position with low cost performance.

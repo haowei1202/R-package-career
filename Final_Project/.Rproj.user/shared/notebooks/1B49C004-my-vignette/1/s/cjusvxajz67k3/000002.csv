@@ -1,0 +1,5 @@
+"0","download_data <- function(){"
+"0","  library(httr)"
+"0","  url <- 'https://www.bls.gov/emp/ind-occ-matrix/occupation.xlsx'"
+"0","  GET(url, write_disk(""./occupation.xlsx"", overwrite = TRUE))"
+"0","}"

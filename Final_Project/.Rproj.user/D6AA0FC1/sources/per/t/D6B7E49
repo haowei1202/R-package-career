@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1575716434172.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3539412497",
+    "id" : "D6B7E49",
+    "lastKnownWriteTime" : 1574927291,
+    "last_content_update" : 1574927291,
+    "path" : "C:/Users/yankhuan/OneDrive/project/R/visualization/notebook.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "93,74",
+        "scrollLine" : "87"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
