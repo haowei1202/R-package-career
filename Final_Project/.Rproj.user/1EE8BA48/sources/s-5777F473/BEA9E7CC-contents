@@ -52,7 +52,7 @@ load_career_data<-function(){
   data_filename<-"occupation.xlsx"
   sheet_id<-8
   data<-read.xlsx(data_filename, sheet=sheet_id)
-  tbl_df(data_needed)
+  tbl_df(data)
 
   # select rows
   row_id<-3:nrow(data)

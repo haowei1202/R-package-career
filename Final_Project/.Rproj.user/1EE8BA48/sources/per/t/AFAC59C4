@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576262143835.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "749780058",
+    "id" : "AFAC59C4",
+    "lastKnownWriteTime" : 1576262118,
+    "last_content_update" : 1576262118,
+    "path" : "~/Desktop/GitHub/R-package-career/Final_Project/R/career.R",
+    "project_path" : "R/career.R",
+    "properties" : {
+        "cursorPosition" : "54,13",
+        "scrollLine" : "48"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
